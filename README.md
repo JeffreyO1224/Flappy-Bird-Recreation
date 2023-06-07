@@ -1,4 +1,6 @@
-Jeffrey Oyuela 6-07-23 jeffreyoyuela@gmail.com
+Jeffrey Oyuela 
+6-07-23 
+jeffreyoyuela@gmail.com
 
 Hello! Thank you for taking a look at my repository.
 
