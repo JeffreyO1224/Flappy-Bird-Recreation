@@ -50,7 +50,9 @@ class Player(pygame.sprite.Sprite):
     
 
         self.rect.y += self.speed_y
-            
+
+    def restart(self):
+        self.rect.center = (width/2, height/2) #Centers the Rectangle
 
     def update(self):
         self.jump()
@@ -65,6 +67,9 @@ class Base_1(pygame.sprite.Sprite):
     def boundary(self):
         if self.rect.right <= 0:
             self.rect.x = width
+
+    def restart(self):
+        pass
 
     def update(self):
         self.rect.x -= 5
@@ -81,6 +86,9 @@ class Base_2(pygame.sprite.Sprite):
     def boundary(self):
         if self.rect.right <= 0:
             self.rect.x = width
+
+    def restart(self):
+        pass
 
     def update(self):
         self.rect.x -= 5
@@ -113,6 +121,10 @@ class Pipe_1(pygame.sprite.Sprite):
         if self.rect.x in range(int((width/2)-2), int((width/2)+2)):
             score += 1
             int(score)
+
+    def restart(self):
+        self.rect.y = y
+        self.rect.x = width
             
 
     def update(self):
@@ -139,6 +151,10 @@ class Pipe_2(pygame.sprite.Sprite):
     def boundary(self):
         if self.rect.right <= 0:
             self.spawn_new_pipe()
+
+    def restart(self):
+        self.rect.left = width
+        self.rect.top = y + 470
 
     def update(self):
         self.rect.x -= 5
@@ -209,31 +225,59 @@ while run:
     pygame.display.update()
 
 run = True
+loop = True
+restart = True
 
-while run:
-    #Keep Game at 60 FPS
-    clock.tick(fps)
-
-    #Check for Events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
-    #Check For Collision
-    collision = pygame.sprite.spritecollide(player, all_dangers, False)
-    for i in collision:
-        run = False
-        os._exit(0)
+while loop:
+    while run:
         
+        #Keep Game at 60 FPS
+        clock.tick(fps)
 
-    #Update Sprites
-    all_sprites.update()
+        #Check for Events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
 
-    #Draw/ Render
-    screen.fill(black)
-    screen.blit(bg, bg_rect)
-    all_sprites.draw(screen)
-    message("Score: " + str(score), white, 24, 35, 10)
+        #Check For Collision
+        collision = pygame.sprite.spritecollide(player, all_dangers, False)
+        for i in collision:
+            restart = True
+            while restart:
+                clock.tick(fps)
+                screen.fill(white)
+                message("Game Over!", black, 50, width/2, height/2 - 60)
+                message("Your score: " + str(score), black, 50, width/2, height/2 - 30)
+                message("Press Enter to Restart!", black, 50, width/2, height/2)
+                message("Press Escape to Exit!", black, 50, width/2, height/2 + 30)
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            score = 0
+                            player.restart()
+                            pipe_1.spawn_new_pipe()
+                            pipe_2.spawn_new_pipe()
+                            restart = False
+                        if event.key == pygame.K_ESCAPE:
+                            loop = False
+                            os._exit(0)
     
-    #Update the Display
-    pygame.display.update()
+                pygame.display.update()
+            #run = False
+            #os._exit(0)
+            
+
+        #Update Sprites
+        all_sprites.update()
+
+        #Draw/ Render
+        screen.fill(black)
+        screen.blit(bg, bg_rect)
+        all_sprites.draw(screen)
+        message("Score: " + str(score), white, 24, 35, 10)
+        
+        #Update the Display
+        pygame.display.update()
+
+
+    
